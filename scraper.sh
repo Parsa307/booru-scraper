@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# scraper.sh: Scrapes images at yande.re,konachan.com,danbooru.donmai.us
+# scraper.sh: Scrapes media at yande.re,konachan.com,danbooru.donmai.us
 
 #read -p "Enter the tag: " TAG
 
@@ -10,24 +10,48 @@ KONACHAN_URL="https://konachan.com"
 DANBOORU_API="https://danbooru.donmai.us/posts.json?tags="
 API_QUERY="/post.json?tags="
 
-if [ -z "$1" ]; then
- # No tag specified.
-  echo "Usage: `basename $0` tag"
+if [ -z "$1" ] || [ -z "$2" ]; then
+ # No tag and booru specified.
+  echo "Usage: `basename $0` tag booru"
+  echo "Booru options: yandere, konachan, danbooru"
   exit 1
 fi
 
 TAG=$1
+BOORU=$2
 
-#if [ -z "$TAG" ]; then
- # No tag specified.
+case "$BOORU" in
+  yandere)
+    URL="${YANDERE_URL}${API_QUERY}${TAG}${HARDCODED_EXCLUDED_TAG}"
+    DIR="yandere_$TAG"
+    JQ_FILTER='.[].jpeg_url'
+    ;;
+  konachan)
+    URL="${KONACHAN_URL}${API_QUERY}${TAG}"
+    DIR="konachan_$TAG"
+    JQ_FILTER='.[].jpeg_url'
+    ;;
+  danbooru)
+    URL="${DANBOORU_API}${TAG}"
+    DIR="danbooru_$TAG"
+    JQ_FILTER='.[].file_url'
+    ;;
+  *)
+    echo "Invalid booru."
+    echo "Valid options: yandere, konachan, danbooru"
+    exit 1
+    ;;
+esac
+
+#if [ -z "$TAG" ] || [ -z "$BOORU" ]; then
+ # No tag and booru specified.
   #echo "A tag is required."
+  #echo "A booru is required.
   #exit 1
 #fi
 
 # Create directory for the images
-mkdir -p "yandere_$TAG"
-mkdir -p "konachan_$TAG"
-mkdir -p "danbooru_$TAG"
+mkdir -p "$DIR"
 
 # Download the image
-curl -s "${YANDERE_URL}${API_QUERY}${TAG}${HARDCODED_EXCLUDED_TAG}" | jq -r '.[].jpeg_url' | aria2c -i- -d "yandere_$TAG" && curl -s "${KONACHAN_URL}${API_QUERY}${TAG}" | jq -r '.[].jpeg_url' | aria2c -i- -d "konachan_$TAG" && curl -s "${DANBOORU_API}${TAG}" | jq -r '.[].file_url' | aria2c -i- -d "danbooru_$TAG"
+curl -s "$URL" | jq -r "$JQ_FILTER" | aria2c -i- -d "$DIR"
