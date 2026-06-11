@@ -4,6 +4,7 @@
 
 # read -p "Enter the tag: " TAG
 # read -p "Enter the booru: " BOORU
+# read -p "Enter the limit (optional): " LIMIT
 
 HARDCODED_EXCLUDED_TAG=+-transparent_png
 YANDERE_URL="https://yande.re"
@@ -20,6 +21,7 @@ fi
 
 TAG=$1
 BOORU=$2
+LIMIT=$3
 
 # if [ -z "$TAG" ] || [ -z "$BOORU" ]; then
 #  No tag and booru specified.
@@ -51,8 +53,13 @@ case "$BOORU" in
     ;;
 esac
 
+# Pass limit parameter if provided
+if [ -n "$LIMIT" ]; then
+  URL="${URL}&limit=${LIMIT}"
+fi
+
 # Create directory for the images
 mkdir -p "$DIR"
 
 # Download the image
-curl -s "$URL" | jq -r "$JQ_FILTER" | aria2c -i- -d "$DIR"
+curl -s "$URL" | jq -r "$JQ_FILTER" | aria2c -c -i- -d "$DIR"
