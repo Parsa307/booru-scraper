@@ -10,7 +10,7 @@ HARDCODED_EXCLUDED_TAG=+-transparent_png
 YANDERE_URL="https://yande.re"
 KONACHAN_URL="https://konachan.com"
 DANBOORU_API="https://danbooru.donmai.us/posts.json?tags="
-SAFEBOORU_API="https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1"
+SAFEBOORU_API="https://safebooru.org/index.php?page=dapi&s=post&q=index&json=1&tags="
 RULE34_API="https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&json=1"
 RULE34_API_KEY="1b7ac421841879b859d0a0d771b6df8e4a3419e0ce54f234e90bc0c8969ac6ada2972a757a25a606e33dfa9bbd946a0ca231f90c38644336367db73f918b61ed"
 RULE34_USER_ID="5925125"
@@ -53,7 +53,7 @@ case "$BOORU" in
     JQ_FILTER='.[].file_url'
     ;;
   safebooru)
-    URL="${SAFEBOORU_API}&tags=${TAG}"
+    URL="${SAFEBOORU_API}${TAG}"
     DIR="safebooru_$TAGS"
     JQ_FILTER='.[].file_url'
     ;;
