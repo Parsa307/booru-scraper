@@ -7,6 +7,7 @@
 # read -p "Enter the limit (optional): " LIMIT
 
 HARDCODED_EXCLUDED_TAG=+-transparent_png
+HARDCODED_RULE34_EXCLUDED_TAG=+-ai_generated
 YANDERE_URL="https://yande.re"
 KONACHAN_URL="https://konachan.com"
 DANBOORU_API="https://danbooru.donmai.us/posts.json?tags="
@@ -58,7 +59,7 @@ case "$BOORU" in
     JQ_FILTER='.[].file_url'
     ;;
   rule34)
-    URL="${RULE34_API}&tags=${TAG}&api_key=${RULE34_API_KEY}&user_id=${RULE34_USER_ID}"
+    URL="${RULE34_API}&tags=${TAG}${HARDCODED_RULE34_EXCLUDED_TAG}&api_key=${RULE34_API_KEY}&user_id=${RULE34_USER_ID}"
     DIR="rule34_$TAGS"
     JQ_FILTER='.[].file_url'
     ;;
